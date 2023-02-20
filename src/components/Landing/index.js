@@ -1,4 +1,5 @@
 import { useEffect, useRef,useState} from "react"
+import { Link } from "react-router-dom";
 
 
 const Landing = () => {
@@ -13,13 +14,25 @@ const Landing = () => {
 
  },[])
 
+ const setImg=(val)=> {
+  refWolverine.current.classList.add(val);
+ }
+
+ const clearImg=()=> {
+  if(refWolverine.current.classList.contains('leftImg')) {
+    refWolverine.current.classList.remove('leftImg')
+  } else {
+    refWolverine.current.classList.remove('rightImg')
+  }
+ }
+
  const displayBtn = btn && (
       <>
-        <div className='leftBox'>
-            <button className='btn-welcome'>Inscription</button>
+        <div className='leftBox' onMouseOver={()=>setImg("leftImg")} onMouseOut={clearImg}>
+            <Link className='btn-welcome' to="/signup">Inscription</Link>
         </div>
-        <div className='rightBox'>
-            <button className='btn-welcome'>Connexion</button>
+        <div className='rightBox' onMouseOver={()=>setImg("rightImg")} onMouseOut={clearImg}>
+            <Link className='btn-welcome' to="/login">Connexion</Link>
         </div>
       </>
 
