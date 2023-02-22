@@ -1,5 +1,7 @@
-import { initializeApp } from "firebase/app";
+// Firebase 9
+import { initializeApp } from 'firebase/app';
 import { getAuth } from "firebase/auth";
+import { getFirestore, doc } from 'firebase/firestore'
 
 const config = {
   apiKey: "AIzaSyBC6YvGGmqXm_mSg7g7iDaTZNykofLT_IM",
@@ -12,5 +14,10 @@ const config = {
 
 const app = initializeApp(config);
 export const auth = getAuth(app);
+
+export const firestore = getFirestore();
+
+export const user = uid => doc(firestore, `users/${uid}`);
+
 
 

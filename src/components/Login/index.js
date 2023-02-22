@@ -27,7 +27,6 @@ const Login = () => {
     e.preventDefault(); 
     signInWithEmailAndPassword(auth,email,password)
     .then(user => {
-      console.log(user)
         setEmail('');
         setPassword('');
        // props.history.push('/welcome') react-router-dom v5
@@ -67,6 +66,9 @@ const Login = () => {
                 </form>
                 <div className="linkContainer">
                 <Link className="simpleLink" to="/signup">Nouveau sur Marvel Quiz ? Inscrivez-vous maintenat.</Link>
+                <br/>
+                <Link className="simpleLink" to="/forgetpassword">Mot de passe oublié ? Récupérer le ici.</Link>
+
                 </div>
 
               </div>
