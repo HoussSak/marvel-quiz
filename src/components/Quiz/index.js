@@ -1,11 +1,15 @@
 
-import React, { Component, useEffect } from 'react'
+import React, { Component} from 'react'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Levels from '../Levels';
 import ProgressBar from '../ProgressBar';
 import {QuizMarvel} from '../quizMarvel';
 
-export class Quiz extends Component {
 
+toast.configure();
+export class Quiz extends Component {
+ 
   state= {
     levelNames: ["debutant","confirme","expert"],
     quizLevel:0,
@@ -15,13 +19,19 @@ export class Quiz extends Component {
     options:[],
     idQuestion:0,
     btnDisabled:true,
-    userAnswer:null
+    userAnswer:null,
+    score:0,
+    showWelcomeMsg:false
 
   }
+
+  storedDataRef = React.createRef();
 
   loadQuestions =quizz=> {
    const fetchedArrayQuiz =  QuizMarvel[0].quizz[quizz];
    if(fetchedArrayQuiz.length >= this.state.maxQuestions) {
+    this.storedDataRef.current = fetchedArrayQuiz;
+
      const newArray =  fetchedArrayQuiz.map(({answer,...keepRest})=> keepRest);
      this.setState({
       storedQuestions:newArray
@@ -29,10 +39,28 @@ export class Quiz extends Component {
 
    } else {
     console.log("pas assez de questions");
-   }
-   
+   } 
     
   }
+
+  showWelcomeMsg= pseudo=> {
+    if(!this.state.showWelcomeMsg) {
+      this.setState({
+        showWelcomeMsg:true
+      })
+      toast.warn(`Bienvenue ${pseudo} et bonne chance!`, {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: false,
+        theme: "colored",
+        bodyClassName:"toastify-color-welcome"
+        });
+    }
+  }
+  
 
   componentDidMount = () => {
     this.loadQuestions(this.state.levelNames[this.state.quizLevel]);
@@ -44,7 +72,21 @@ export class Quiz extends Component {
       question:this.state.storedQuestions[this.state.idQuestion].question,
       options:this.state.storedQuestions[this.state.idQuestion].options
     })
-   }  
+   }
+
+   if (this.state.idQuestion !== prevState.idQuestion) {
+    this.setState({
+      question:this.state.storedQuestions[this.state.idQuestion].question,
+      options:this.state.storedQuestions[this.state.idQuestion].options,
+      userAnswer:null,
+      btnDisabled:true
+    })
+   }
+
+   if(this.props.userData.pseudo) {
+    this.showWelcomeMsg(this.props.userData.pseudo)
+   }
+     
   }
 
   submitAnswer= (selectedAnswer)=> {
@@ -53,6 +95,45 @@ export class Quiz extends Component {
       btnDisabled:false
     })
   }
+  nextQuestion=()=> {
+    if(this.state.idQuestion === this.state.maxQuestions -1) {
+      //end
+    } else {
+      this.setState(prevState=>({
+        idQuestion:prevState.idQuestion + 1
+      }))
+    }
+    //+ 1 score
+    const goodAnswer = this.storedDataRef.current[this.state.idQuestion].answer
+    if(this.state.userAnswer === goodAnswer) {
+      this.setState(prevState =>({
+        score: prevState.score + 1
+      }))
+      toast.success('Bravo +1', {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored",
+        bodyClassName:'toastify-color'
+        });
+    } else {
+      toast.error('Raté 0', {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored",
+        bodyClassName:'toastify-color'
+        });
+
+    }
+  }
+
   
   render() {
 
@@ -72,7 +153,12 @@ export class Quiz extends Component {
         <ProgressBar/>
         <h2>{this.state.question}</h2>
         {displayOptions}
-        <button disabled={this.state.btnDisabled} className='btnSubmit'>Suivant</button>
+        <button 
+            disabled={this.state.btnDisabled} 
+            className='btnSubmit'
+            onClick={this.nextQuestion}
+            >Suivant
+        </button>
       </div>
     )
   }
