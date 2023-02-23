@@ -32,6 +32,7 @@ export class Quiz extends Component {
   loadQuestions =quizz=> {
    const fetchedArrayQuiz =  QuizMarvel[0].quizz[quizz];
    if(fetchedArrayQuiz.length >= this.state.maxQuestions) {
+
     this.storedDataRef.current = fetchedArrayQuiz;
 
      const newArray =  fetchedArrayQuiz.map(({answer,...keepRest})=> keepRest);
@@ -154,8 +155,10 @@ export class Quiz extends Component {
              </p>
     })
 
-    return this.state.quizEnd ? (
-      <QuizOver/>
+    return !this.state.quizEnd ? (
+      <QuizOver 
+        ref = {this.storedDataRef}
+      />
     )
     :
      (
