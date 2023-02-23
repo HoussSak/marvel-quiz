@@ -5,6 +5,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import Levels from '../Levels';
 import ProgressBar from '../ProgressBar';
 import {QuizMarvel} from '../quizMarvel';
+import QuizOver from '../QuizOver';
 
 
 toast.configure();
@@ -21,7 +22,8 @@ export class Quiz extends Component {
     btnDisabled:true,
     userAnswer:null,
     score:0,
-    showWelcomeMsg:false
+    showWelcomeMsg:false,
+    quizEnd:false
 
   }
 
@@ -95,9 +97,16 @@ export class Quiz extends Component {
       btnDisabled:false
     })
   }
+
+  gameOver=()=> {
+      this.setState({
+        quizEnd:true
+      });
+  }
   nextQuestion=()=> {
     if(this.state.idQuestion === this.state.maxQuestions -1) {
-      //end
+     
+        this.gameOver();
     } else {
       this.setState(prevState=>({
         idQuestion:prevState.idQuestion + 1
@@ -145,21 +154,28 @@ export class Quiz extends Component {
              </p>
     })
 
-    //const {pseudo} = this.props.userData;
-    return (
-      <div>
+    return this.state.quizEnd ? (
+      <QuizOver/>
+    )
+    :
+     (
+      <>
 
         <Levels/>
-        <ProgressBar/>
+        <ProgressBar
+             idQuestion = {this.state.idQuestion} 
+             maxQuestions = {this.state.maxQuestions}
+        />
+        
         <h2>{this.state.question}</h2>
         {displayOptions}
         <button 
             disabled={this.state.btnDisabled} 
             className='btnSubmit'
             onClick={this.nextQuestion}
-            >Suivant
+            >{this.state.idQuestion < this.state.maxQuestions -1  ? "Suivant":"Terminer"}
         </button>
-      </div>
+      </>
     )
   }
 }
