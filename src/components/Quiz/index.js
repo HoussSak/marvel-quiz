@@ -1,6 +1,6 @@
 
 import React, { Component} from 'react'
-import { ToastContainer, toast } from 'react-toastify';
+import {  toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Levels from '../Levels';
 import ProgressBar from '../ProgressBar';
@@ -23,7 +23,8 @@ export class Quiz extends Component {
     userAnswer:null,
     score:0,
     showWelcomeMsg:false,
-    quizEnd:false
+    quizEnd:false,
+    percent:null
 
   }
 
@@ -98,15 +99,26 @@ export class Quiz extends Component {
       btnDisabled:false
     })
   }
-
+  getPercentage =(maxQuest,ourScore)=> (ourScore / maxQuest) * 100;
   gameOver=()=> {
-      this.setState({
-        quizEnd:true
-      });
+      const gradePercent = this.getPercentage(this.state.maxQuestions,this.state.score);
+      if(gradePercent >= 50) {
+        this.setState({
+          quizLevel:this.state.quizLevel + 1,
+          percent:gradePercent,
+          quizEnd:true
+        });
+      } else {
+        this.setState({
+          percent:gradePercent,
+          quizEnd:true
+        });
+
+      }
+      
   }
   nextQuestion=()=> {
     if(this.state.idQuestion === this.state.maxQuestions -1) {
-     
         this.gameOver();
     } else {
       this.setState(prevState=>({
@@ -155,9 +167,14 @@ export class Quiz extends Component {
              </p>
     })
 
-    return !this.state.quizEnd ? (
+    return this.state.quizEnd ? (
       <QuizOver 
         ref = {this.storedDataRef}
+        levelNames={this.state.levelNames}
+        score={this.state.score}
+        maxQuestions= {this.state.maxQuestions}
+        quizLevel={this.state.quizLevel}
+        percent={this.state.percent}
       />
     )
     :
@@ -176,7 +193,8 @@ export class Quiz extends Component {
             disabled={this.state.btnDisabled} 
             className='btnSubmit'
             onClick={this.nextQuestion}
-            >{this.state.idQuestion < this.state.maxQuestions -1  ? "Suivant":"Terminer"}
+            >
+         {this.state.idQuestion < this.state.maxQuestions -1  ? "Suivant":"Terminer"}
         </button>
       </>
     )
