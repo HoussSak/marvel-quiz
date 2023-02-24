@@ -5,6 +5,7 @@ import { getDoc } from 'firebase/firestore';
 import Logout from '../Logout';
 import Quiz from '../Quiz';
 import { useNavigate } from 'react-router-dom';
+import Loader from '../Loader/Loader';
 const Welcome = () => {
 
   const [userSession,setUserSession] = useState(null);
@@ -36,10 +37,10 @@ const Welcome = () => {
 
 
   return userSession === null ? (
-    <>
-      <div className='loader'></div>
-      <p>Loading...</p>
-    </>
+    <Loader 
+              loadingMsg='Authentification ...'
+              styling ={{textAlign:'center', color:'green'}}
+          />
   ): (
     <div className="quiz-bg">
         <div className="container">
