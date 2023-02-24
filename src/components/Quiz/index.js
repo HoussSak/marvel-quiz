@@ -28,19 +28,13 @@ export class Quiz extends Component {
       showWelcomeMsg:false,
       quizEnd:false,
       percent:null
-  
     }
 
     this.state = this.initialstate;
     this.storedDataRef = React.createRef();
-   
-
-    
   }
 
   
-  
-
 
   loadQuestions =quizz=> {
    const fetchedArrayQuiz =  QuizMarvel[0].quizz[quizz];
@@ -99,6 +93,11 @@ export class Quiz extends Component {
       btnDisabled:true
     })
    }
+   if(this.state.quizEnd !== prevState.quizEnd) {
+    const gradePercent = this.getPercentage(this.state.maxQuestions,this.state.score);
+    this.gameOver(gradePercent)
+    
+   }
 
    if(this.props.userData.pseudo !== prevProps.userData.pseudo) {
     this.showToastMsg(this.props.userData.pseudo)
@@ -114,18 +113,19 @@ export class Quiz extends Component {
     })
   }
   getPercentage =(maxQuest,ourScore)=> (ourScore / maxQuest) * 100;
-  gameOver=()=> {
-      const gradePercent = this.getPercentage(this.state.maxQuestions,this.state.score);
-      if(gradePercent >= 50) {
+
+    gameOver=(percent)=> {
+
+      
+      if(percent >= 50) {
         this.setState({
           quizLevel:this.state.quizLevel + 1,
-          percent:gradePercent,
-          quizEnd:true
+          percent:percent
         });
       } else {
         this.setState({
-          percent:gradePercent,
-          quizEnd:true
+          //percent:percent
+          percent
         });
 
       }
@@ -133,7 +133,10 @@ export class Quiz extends Component {
   }
   nextQuestion=()=> {
     if(this.state.idQuestion === this.state.maxQuestions -1) {
-        this.gameOver();
+       // this.gameOver();
+       this.setState({
+        quizEnd:true
+       })
     } else {
       this.setState(prevState=>({
         idQuestion:prevState.idQuestion + 1
@@ -177,6 +180,7 @@ export class Quiz extends Component {
 
   
   render() {
+   
 
     const displayOptions =  this.state.options.map((option,index)=> {
       return <p key={index}
