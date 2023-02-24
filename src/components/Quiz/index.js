@@ -6,6 +6,7 @@ import Levels from '../Levels';
 import ProgressBar from '../ProgressBar';
 import {QuizMarvel} from '../quizMarvel';
 import QuizOver from '../QuizOver';
+import {FaChevronRight} from 'react-icons/fa';
 
 
 toast.configure();
@@ -186,7 +187,8 @@ export class Quiz extends Component {
       return <p key={index}
                className= {`answerOptions ${this.state.userAnswer === option ? 'selected' : ''}`}
                onClick={()=> this.submitAnswer(option)}
-               >{option}
+               >
+                <FaChevronRight/> {option}
              </p>
     })
 
@@ -205,7 +207,10 @@ export class Quiz extends Component {
      (
       <>
 
-        <Levels/>
+        <Levels
+             levelNames = {this.state.levelNames}
+             quizLevel = {this.state.quizLevel}
+             />
         <ProgressBar
              idQuestion = {this.state.idQuestion} 
              maxQuestions = {this.state.maxQuestions}
