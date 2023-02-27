@@ -27,21 +27,48 @@ const QuizOver = React.forwardRef((props,ref) => {
 
   useEffect(()=> {
       setAsked(ref.current);
+      if(localStorage.getItem('marvelStorageDate')) {
+        const date = localStorage.getItem('marvelStorageDate');
+        checkDataAge(date)
+      }
   },[ref])
+
+  const checkDataAge = date => {
+    const  today = Date.now();
+    const timeDifference  =  today - date;
+   const daysDifference =  timeDifference / (1000 * 3600 * 24) ;
+   if(daysDifference >= 15 ) {
+    localStorage.clear();
+    localStorage.setItem('marvelStorageDate',Date.now());
+   }
+  }
 
   const showModal = id => {
     setOpenModal(true);
 
-    axios
-    .get(`https://gateway.marvel.com/v1/public/characters/${id}?ts=1&apikey=${API_PUBLIC_KEY}&hash=${hash}`)
-    .then(response => {
-      setCharacterInfos(response.data);
+    if(localStorage.getItem(id)) {
+      setCharacterInfos(JSON.parse(localStorage.getItem(id))); //response.data
       setLoading(false);
-    })
-    .catch(error=> {
-      console.log(error)
-    })
+
+    }else {
+
+      axios
+      .get(`https://gateway.marvel.com/v1/public/characters/${id}?ts=1&apikey=${API_PUBLIC_KEY}&hash=${hash}`)
+      .then(response => {
+        setCharacterInfos(response.data);
+        setLoading(false);
+        localStorage.setItem(id,JSON.stringify(response.data));
+  
+        if(!localStorage.getItem('marvelStorageDate')) {
+          localStorage.setItem('marvelStorageDate',Date.now());
+        }
+      })
+      .catch(error=> {
+        console.log(error)
+      })
+    }
   }
+
   const hideModal = () => {
     setOpenModal(false);
     setLoading(true);
