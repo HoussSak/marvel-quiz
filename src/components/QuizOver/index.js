@@ -15,15 +15,13 @@ const QuizOver = React.forwardRef((props,ref) => {
   } = props;
 
 
-  const API_PUBLIC_KEY = process.env.REACT_APP_MARVEL_API_KEY;
-  const hash = '347a67b5d720d1983b3de3d7d16748bd';
+const API_PUBLIC_KEY = process.env.REACT_APP_MARVEL_API_KEY;
+const hash = '347a67b5d720d1983b3de3d7d16748bd';
 
-  console.log(API_PUBLIC_KEY);
-
- const [asked,setAsked] =  useState([]);
- const [openMoal,setOpenModal] =  useState(false);
- const [characterInfos,setCharacterInfos] =  useState([]);
- const [loading,setLoading] =  useState(true);
+const [asked,setAsked] =  useState([]);
+const [openMoal,setOpenModal] =  useState(false);
+const [characterInfos,setCharacterInfos] =  useState([]);
+const [loading,setLoading] =  useState(true);
 
   useEffect(()=> {
       setAsked(ref.current);
@@ -72,6 +70,10 @@ const QuizOver = React.forwardRef((props,ref) => {
   const hideModal = () => {
     setOpenModal(false);
     setLoading(true);
+  }
+
+  const capitalizeFirstLetter= string=> {
+    return string.charAt(0).toUpperCase() + string.slice(1);
   }
   
   const averageGrade = maxQuestions/ 2;
@@ -157,10 +159,40 @@ const QuizOver = React.forwardRef((props,ref) => {
           <h2>{characterInfos.data.results[0].name}</h2>
         </div>
         <div className='modalBody'>
-          <h3>Ttitre 2</h3>
+          <div className='comicImage'>
+              <img 
+                  src={characterInfos.data.results[0].thumbnail.path+'.'+characterInfos.data.results[0].thumbnail.extension} 
+                  alt={characterInfos.data.results[0].name}
+              />
+              <p>{characterInfos.attributionText}</p>
+          </div>
+          <div className='comicDetails'>
+            <h3>Description</h3>
+            {
+              characterInfos.data.results[0].description ?
+                <p>{characterInfos.data.results[0].description}</p>
+                :
+                <p>Description indisponible</p>
+            }
+            <h3>Plus d'infos</h3>
+            {
+              characterInfos.data.results[0].urls && 
+              characterInfos.data.results[0].urls.map((url,index)=> {
+                return <a 
+                          key={index}
+                          href={url.url}
+                          target='_blank'
+                          rel='noopener noreferrer'
+                        >
+                          {capitalizeFirstLetter(url.type)}
+                        </a>
+              })
+            }
+
+          </div>
         </div>
         <div className='modalFooter'>
-          <button className='modalBtn' >Fermer</button>
+          <button className='modalBtn' onClick={hideModal}>Fermer</button>
         </div>
       </>
     )
